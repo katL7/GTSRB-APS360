@@ -1,0 +1,343 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2022_conference,times}
+\usepackage{svg}
+\usepackage{hyperref}
+\svgpath{{Figs/}}
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+%######## APS360: Uncomment your submission name
+\newcommand{\apsname}{Project Proposal}
+%\newcommand{\apsname}{Progress Report}
+%\newcommand{\apsname}{Final Report}
+
+%######## APS360: Put your Group Number here
+\newcommand{\gpnumber}{22}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{multirow}
+
+%######## APS360: Put your project Title here
+\title{Traffic Sign Classification}
+
+
+%######## APS360: Put your names, student IDs and Emails here
+\author{Jordan Greenberg  \\
+Student\# 1005046530\\
+\texttt{jordan.greenberg@mail.utoronto.ca} \\
+\And
+Arthur Akbulatov  \\
+Student\# 1005693055 \\
+\texttt{arthur.akbulatov@mail.utoronto.ca} \\
+\AND
+Katherine Latosinsky  \\
+Student\# 1005965911 \\
+\texttt{katherine.latosinsky@mail.utoronto.ca} \\
+\And
+Mattéo Gouzien \\
+Student\# 1005678901 \\
+\texttt{matteo.gouzien@mail.utoronto.ca} \\
+\AND
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy 
+%######## APS360: Document starts here
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+We propose to train a deep learning algorithm to classify traffic signage, a problem which is highly relevant for computer vision in vehicles. Classification is to be accomplished using a Convolutional Neural Network (CNN), measured against a baseline Artificial Neural Network (ANN), with potential to explore applications of auto-encoders to detect unlabelled features in the data. Preliminary ethical considerations are discussed, with particular attention to the implications for self-driving vehicles.
+
+%######## APS360: Do not change the next line. This shows your Main body page count.
+----Total Pages: \pageref{last_page}
+\end{abstract}
+
+\section{Introduction}
+In this project we aim to train a deep learning model to accurately classify road signs at various distances, angles and lighting conditions. Traffic sign recognition is an extremely important and well-researched task in the field of computer vision. These algorithms are common in many assistive driving technologies to aid the driver in identifying and responding to traffic signs, and are also essential for the development of autonomous vehicles. Advances in deep learning have led to significant improvement in traffic sign recognition in the last decade. Deep Learning techniques make it possible to identify hidden patterns in data that enable algorithms to generalize the concept of traffic signs and identify signage in a variety of real-world conditions. In this project we will investigate the performance of various deep learning algorithms in the task of traffic sign recognition, and demonstrate the ability for our algorithm to generalize in its ability to identify traffic signs.
+
+
+\section{Background and Related Work}
+Traffic signs are designed with specific shapes, colours, and appearances in mind to allow for quick and accurate recognition by humans \citep{STALLKAMP2012323}. When considering how computers can learn to recognize and classify traffic signs, a similar approach can be taken to leverage the physical characteristic trends of traffic signs. 
+
+Traffic sign recognition (TSR) has been widely studied for use in advanced driver assistance systems (ADAS) and autonomous driving systems (ADS). Looking forward to the future, accurate TSR is vital when developing technologies to assist and/or replace human driving. Recognition usually consists of detection and classification \citep{Liu19}. Our project will focus on the classification of traffic signs.
+
+The article \citet{Liu19} discusses common ways traffic sign classification has been done in the past, including binary-tree-based classification, Support Vector Machine (SVM) based classification, Neural Networks, and Sparse Representation Classification (SRC). Binary-tree-based classification uses shapes and colours with a "coarse-to-fine" tree process while Neural Networks use binary classification machine learning methodologies. Our project will work with Neural Networks to classify traffic signs. Convolutional Neural Networks (CNN) have been used in the past for classifying traffic signs, and these architectures were shown to perform well when trained on large datasets compared to other approaches \citep{Liu19}.
+
+In 2011, \textit{The German Traffic Sign Recognition Benchmark} was conducted at the IJCNN conference. Various teams participated and submitted machine learning models to be evaluated with the dataset of over 50,000 German road signs. In the paper \citet{STALLKAMP2012323} which discusses the results of the competition, human performance was also measured. Correct classification rate (CCR) was used to compare models and human performance. The results of the competition showed that a committee of CNNs in the form of a multi-column deep neural network performed better than the best performing human that participated in the study \citep{STALLKAMP2012323}. The CCR of the committee of CNNs was 99.46\% while the best performing human had a CCR of 99.22\%. The average human that participated in the study had a CCR of 98.84\%. More traditional CNNs were shown to have a CCR slightly lower than average performing humans at 98.31\%. These results give our team confidence that we can develop a model within the scope of this course that can accurately classify traffic signs.
+
+\section{Data Processing}
+
+The database we selected for this project is the German Traffic Sign Recognition Benchmark \citep{Stallkamp-IJCNN-2011}. This database contains over 50,000 images of traffic signs categorized into 43 unique classes. In order to prepare the data for training, it needs to be properly processed and formatted beforehand. Within the images, the traffic signs may not be centered, and the area of the background can vary. Therefore, the images will be cropped to the boundaries of the traffic sign to have consistent sign placement in every image. It is beyond the scope of this project to have the algorithm identify the position of the sign within a larger image. The size of the images in the dataset vary between 15x15 to 250x250 pixels, so the images will be rescaled to the same size after being cropped, to ensure that each image contains the same amount of data. The images in the database are in the Portable PixMap P6 (PPM) format, with three RGB colour channels ranging from 0 to 255. The images will be transformed to normalized tensors with the range [-1, 1] for each channel. After these processing steps, the data will be ready to train our model with. The images in the database will be split into 80\% training, 10\% validation, and 10\% testing data using stratified sampling to ensure that each class is proportionally represented in the training, validation, and testing data.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{Figs/APS360.png}
+\end{center}
+\caption{Example diagram of the architecture we will use to classify traffic signs. Exact architecture details may vary.}
+\label{fig:CNN}
+\end{figure}
+
+
+\section{Architecture}
+First, we will develop a classical ANN in order to compare its performance with the two baseline models. Implementing this first deep learning model will allow us to better understand the complexity of the data at our disposal, and the potential for underfitting and overfitting. This first model will lead to a phase of optimization of the hyperparameters in order to have the best performing model possible. 
+
+Follow this a CNN will be implemented. The basic architecture for this CNN is outlined in Figure \ref{fig:CNN}. It is expected that the CNN will be more efficient than the ANN for image classification. The performance of this network will be tested on modified data (noise, rotation, zoom) in order to evaluate the robustness of the latter and perhaps to re-train it after a new and more advanced preprocessing phase.
+
+
+Time permitting, we also intend to explore the use of autoencoders to combine this supervised learning task with unsupervised learning to increase the performance of the networks and to detect new features. Several architectures (encoders, convolutional or non convolutional autoencoders) could be tested in order to compare the performance of the latter in recognising patterns common to different labels.
+
+
+
+\section{Baseline Model}
+Having a baseline model is very important in order to have a reference against which to compare our performance metrics. The baseline is a very basic model to provide insight into the future performances of our models. Moreover, this simple model can be used to improve the understanding of our data. For example, we can find which class is easier to predict and which is harder, in order to maybe tune the prepossessing part.
+We chose to start small and to use sklearn, which is a python library useful to implement in a very simple way a lot of machine learning algorithms. For classification problems, SVM (Support Vector Machine) and Decision Trees are commonly used.
+SVM algorithms are effective in high dimensional space and could perform well for multiclass classification.
+Decision trees are taking simple decision rules inferred from the data features. The results are simple to understand and interpret. However, decision trees can be unstable and can often overfit.
+To observe the advantages of both algorithms, we will use them to have a first idea of how could simple machine learning algorithms can perform on the dataset used in this project. We will use the better model as our baseline for future comparisons.
+
+\section{Ethical Considerations}
+TSR systems are often used to aid decision making for self-driving cars. These autonomous driving systems have to take in a plethora of information and make driving decisions. Human lives are at stake considering the velocity cars move at and their overall size and weight \citep{9498342}. For example, if a self-driving car misclassified a stop sign, the car might drive through the intersection without stopping. This poses immense safety risks to other drivers and pedestrians. For this reason it is vital that machine learning algorithms can accurately make classifications with a high degree of confidence. 
+
+From a theoretical standpoint, computers and machine learning algorithms should be be able to perform better than humans at driving, especially when considering how much information can be processed by a computer to make decisions in a short amount of time. However, within the scope of this project, if there is any uncertainty in the ability of a model to correctly classify a traffic sign, the safety risk of using machine learning to drive a car is too great compared to a human-driven vehicle \citep{9498342}. 
+
+It is also imperative that data collection considered. Sign colours, styles, and appearances differ greatly from region to region across the globe. If models are trained on North American signs, the model may suffer when attempting to classify European signs which introduces safety risks that could come at the cost of human lives.
+
+\section{Project Plan}
+\label{ProjectPlan}
+This section outlines our team's plan to manage our schedules and meet project deadlines. We will communicate asynchronously using the Discord messaging platform and meet regularly once a week during the 8pm lab period on Wednesdays. We will schedule additional meetings as needed, either in-person or over Discord. We have chosen to use Github to document the completion of work, make checkpoints of functioning code, and to mitigate the potential for code to be over-written.
+
+All team members will be responsible for contributing to the project code, written reports, and final presentation. Table \ref{tab:task_table} provides an overview of the specific responsibilities of each team member and relevant deadlines. Additional tasks will be assigned when they arise, and tasks will be redistributed as needed to so that work is shared equally.
+
+\begin{table}[t]
+\caption{Responsibilities and internal deadlines}
+\vspace{12pt}
+\label{tab:task_table}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lll}
+\multicolumn{1}{c}{\bf TEAM MEMBER}  &\multicolumn{1}{c}{\bf RESPONSIBILITIES} &\multicolumn{1}{c}{\bf DEADLINE}
+\\ \hline \\
+\multirow{3}{*}{Arthur}    & • Setting up and managing Github                             & Oct 13 - initial setup                            \\
+                           & • Basic code outline and structure                                        & Oct 22 - all major sections outlined              \\
+                           & • Managing presentation slides                       & Nov 15 - presentation started                     \\\\
+\multirow{3}{*}{Jordan}    & • Cleaning dataset     & Oct 22 - data cleaned for use by model            \\
+                           & \multirow{2}{*}{• Obtaining model performance metrics}               & Oct 30 - metrics for progress report              \\
+                           &                                                                           & Nov 26 - metrics for final report                 \\\\
+\multirow{3}{*}{Katherine} & • Image pre-processing                                                    & Oct 23 - Pre-processing completed                 \\
+                           & \multirow{2}{*}{• Latex document management} & Oct 23 - progress report started                  \\
+                           &                                                                           & Nov 15 - final document started                   \\\\
+\multirow{3}{*}{Mattéo}    & • Researching models for classification                                   & Oct 16 - list of models to implement              \\
+                           & \multirow{2}{*}{• Hyperparameter optimization}                            & Oct 28 - parameters for progress report \\
+                           &                                                                           & Nov 22 - parameters for final report   
+\end{tabular}%
+}
+\end{table}
+
+\section{Risk Register}
+Below we have documented potential risks that our team has considered and courses of action that we will take should they occur.
+
+\begin{enumerate}
+\item A team member drops out of the course\begin{itemize}
+\item In this situation we would immediately split up the assigned tasks of the group member who dropped amongst the remaining group members. This would be done considering the current workload and progress of each remaining team member. Additionally, we will try to split tasks based on familiarity and strengths of the remaining team members.
+\end{itemize}
+\item Our model takes too long to train \begin{itemize}
+\item In this situation we find ourselves having to wait for significant amounts of time while training our model and are concerned about having results to evaluate. As a precautionary measure, we have adjusted our timeline in section~\ref{ProjectPlan} to give ourselves more time than we anticipate we'll need to train our model. Additionally, we plan to save checkpoints/instances of our model as we train it so that we can load a previous working version if training is taking too long. We also can simplify our model to make it train faster and sacrifice performance for results we can present and analyze at the end of the project
+\end{itemize}
+\item We realize there is too much data to work with \begin{itemize}
+\item This situation could occur when we start looking deeper into our dataset and realize there is too much data to work with and it's making it too complicated to effectively train our model. In this case we plan to do more pre-processing of our data and reducing the sizes of our training, validation, and test datasets to a manageable size that we can work with. This can also shorten run-times.
+\end{itemize}
+\item A team member is unable to completely finish their portion of the project \begin{itemize}
+\item This situation could occur when a team member gets overwhelmed, sick, or is otherwise unable to fulfil their responsibilities on the team for a period. We would redistribute the remaining tasks among the other team members to continue progressing on the project, similarly to the response if a team member had dropped the course. The difference in this situation is that as a team we would continue to check in with this team member to see how we can support them through the end of the project. Perhaps the team takes on more now and when the team member has more bandwidth later in the project they take on additional responsibilities. We will attempt to redistribute the tasks in such a way that there are still even contributions at the end of the project.
+\end{itemize}
+\item The code breaks right before the submission deadline \begin{itemize}
+\item This situation could occur when we make a change close to the deadline and our code no longer works as intended or "breaks" and can no longer run at all. As a precautionary measure, we have chosen to store our code on GitHub, a version control system for code. This way we can revert back to the last known working version of our code and not have to worry about wasting time trying to chase down a bug that broke our code. Additionally, we will also document our progress so we can quickly identify the last known working version and know details about that version should we have to use it under a time crunch.
+\end{itemize}
+\end{enumerate}
+
+\section{Link to GitHub}
+Our project repository can be found at the following link:
+\begin{center}
+    \url{https://github.com/Arthur-Akb/GTSRB-APS360-Project}
+\end{center}
+\label{last_page}
+
+\bibliography{APS360_ref}
+\bibliographystyle{iclr2022_conference}
+
+\end{document}
+
+
+
+
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{Figs/td-deep-learning.jpg}
+\end{center}
+\caption{Sample figure caption. Image: ZDNet}
+\end{figure}
+
+
+
+\subsection{Tables}
+
+All tables must be centered, neat, clean and legible. Do not use hand-drawn
+tables. The table number and title always appear before the table. See
+Table~\ref{sample-table}.
+
+Place one line space before the table title, one line space after the table
+title, and one line space after the table. The table title must be lower case
+(except for first word and proper nouns); tables are numbered consecutively.
+
+\begin{table}[t]
+\caption{Sample table title}
+\label{sample-table}
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{1}{c}{\bf PART}  &\multicolumn{1}{c}{\bf DESCRIPTION}
+\\ \hline \\
+Dendrite         &Input terminal \\
+Axon             &Output terminal \\
+Soma             &Cell body (contains cell nucleus) \\
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\section{Default Notation}
+
+In an attempt to encourage standardized notation, we have included the
+notation file from the textbook, \textit{Deep Learning}
+\cite{goodfellow2016deep} available at
+\url{https://github.com/goodfeli/dlbook_notation/}.  Use of this style
+is not required and can be disabled by commenting out
+\texttt{math\_commands.tex}.
+
+
+\centerline{\bf Numbers and Arrays}
+\bgroup
+\def\arraystretch{1.5}
+\begin{tabular}{p{1in}p{3.25in}}
+$\displaystyle a$ & A scalar (integer or real)\\
+$\displaystyle \va$ & A vector\\
+$\displaystyle \mA$ & A matrix\\
+$\displaystyle \tA$ & A tensor\\
+$\displaystyle \mI_n$ & Identity matrix with $n$ rows and $n$ columns\\
+$\displaystyle \mI$ & Identity matrix with dimensionality implied by context\\
+$\displaystyle \ve^{(i)}$ & Standard basis vector $[0,\dots,0,1,0,\dots,0]$ with a 1 at position $i$\\
+$\displaystyle \text{diag}(\va)$ & A square, diagonal matrix with diagonal entries given by $\va$\\
+$\displaystyle \ra$ & A scalar random variable\\
+$\displaystyle \rva$ & A vector-valued random variable\\
+$\displaystyle \rmA$ & A matrix-valued random variable\\
+\end{tabular}
+\egroup
+\vspace{0.25cm}
+\centerline{\bf Sets and Graphs}
+\bgroup
+\def\arraystretch{1.5}
+
+\begin{tabular}{p{1.25in}p{3.25in}}
+$\displaystyle \sA$ & A set\\
+$\displaystyle \R$ & The set of real numbers \\
+$\displaystyle \{0, 1\}$ & The set containing 0 and 1 \\
+$\displaystyle \{0, 1, \dots, n \}$ & The set of all integers between $0$ and $n$\\
+$\displaystyle [a, b]$ & The real interval including $a$ and $b$\\
+$\displaystyle (a, b]$ & The real interval excluding $a$ but including $b$\\
+$\displaystyle \sA \backslash \sB$ & Set subtraction, i.e., the set containing the elements of $\sA$ that are not in $\sB$\\
+$\displaystyle \gG$ & A graph\\
+$\displaystyle \parents_\gG(\ervx_i)$ & The parents of $\ervx_i$ in $\gG$
+\end{tabular}
+\vspace{0.25cm}
+
+
+\centerline{\bf Indexing}
+\bgroup
+\def\arraystretch{1.5}
+
+\begin{tabular}{p{1.25in}p{3.25in}}
+$\displaystyle \eva_i$ & Element $i$ of vector $\va$, with indexing starting at 1 \\
+$\displaystyle \eva_{-i}$ & All elements of vector $\va$ except for element $i$ \\
+$\displaystyle \emA_{i,j}$ & Element $i, j$ of matrix $\mA$ \\
+$\displaystyle \mA_{i, :}$ & Row $i$ of matrix $\mA$ \\
+$\displaystyle \mA_{:, i}$ & Column $i$ of matrix $\mA$ \\
+$\displaystyle \etA_{i, j, k}$ & Element $(i, j, k)$ of a 3-D tensor $\tA$\\
+$\displaystyle \tA_{:, :, i}$ & 2-D slice of a 3-D tensor\\
+$\displaystyle \erva_i$ & Element $i$ of the random vector $\rva$ \\
+\end{tabular}
+\egroup
+\vspace{0.25cm}
+
+
+\centerline{\bf Calculus}
+\bgroup
+\def\arraystretch{1.5}
+\begin{tabular}{p{1.25in}p{3.25in}}
+% NOTE: the [2ex] on the next line adds extra height to that row of the table.
+% Without that command, the fraction on the first line is too tall and collides
+% with the fraction on the second line.
+$\displaystyle\frac{d y} {d x}$ & Derivative of $y$ with respect to $x$\\ [2ex]
+$\displaystyle \frac{\partial y} {\partial x} $ & Partial derivative of $y$ with respect to $x$ \\
+$\displaystyle \nabla_\vx y $ & Gradient of $y$ with respect to $\vx$ \\
+$\displaystyle \nabla_\mX y $ & Matrix derivatives of $y$ with respect to $\mX$ \\
+$\displaystyle \nabla_\tX y $ & Tensor containing derivatives of $y$ with respect to $\tX$ \\
+$\displaystyle \frac{\partial f}{\partial \vx} $ & Jacobian matrix $\mJ \in \R^{m\times n}$ of $f: \R^n \rightarrow \R^m$\\
+$\displaystyle \nabla_\vx^2 f(\vx)\text{ or }\mH( f)(\vx)$ & The Hessian matrix of $f$ at input point $\vx$\\
+$\displaystyle \int f(\vx) d\vx $ & Definite integral over the entire domain of $\vx$ \\
+$\displaystyle \int_\sS f(\vx) d\vx$ & Definite integral with respect to $\vx$ over the set $\sS$ \\
+\end{tabular}
+\egroup
+\vspace{0.25cm}
+
+\centerline{\bf Probability and Information Theory}
+\bgroup
+\def\arraystretch{1.5}
+\begin{tabular}{p{1.25in}p{3.25in}}
+$\displaystyle P(\ra)$ & A probability distribution over a discrete variable\\
+$\displaystyle p(\ra)$ & A probability distribution over a continuous variable, or over
+a variable whose type has not been specified\\
+$\displaystyle \ra \sim P$ & Random variable $\ra$ has distribution $P$\\% so thing on left of \sim should always be a random variable, with name beginning with \r
+$\displaystyle  \E_{\rx\sim P} [ f(x) ]\text{ or } \E f(x)$ & Expectation of $f(x)$ with respect to $P(\rx)$ \\
+$\displaystyle \Var(f(x)) $ &  Variance of $f(x)$ under $P(\rx)$ \\
+$\displaystyle \Cov(f(x),g(x)) $ & Covariance of $f(x)$ and $g(x)$ under $P(\rx)$\\
+$\displaystyle H(\rx) $ & Shannon entropy of the random variable $\rx$\\
+$\displaystyle \KL ( P \Vert Q ) $ & Kullback-Leibler divergence of P and Q \\
+$\displaystyle \mathcal{N} ( \vx ; \vmu , \mSigma)$ & Gaussian distribution %
+over $\vx$ with mean $\vmu$ and covariance $\mSigma$ \\
+\end{tabular}
+\egroup
+\vspace{0.25cm}
+
+\centerline{\bf Functions}
+\bgroup
+\def\arraystretch{1.5}
+\begin{tabular}{p{1.25in}p{3.25in}}
+$\displaystyle f: \sA \rightarrow \sB$ & The function $f$ with domain $\sA$ and range $\sB$\\
+$\displaystyle f \circ g $ & Composition of the functions $f$ and $g$ \\
+  $\displaystyle f(\vx ; \vtheta) $ & A function of $\vx$ parametrized by $\vtheta$.
+  (Sometimes we write $f(\vx)$ and omit the argument $\vtheta$ to lighten notation) \\
+$\displaystyle \log x$ & Natural logarithm of $x$ \\
+$\displaystyle \sigma(x)$ & Logistic sigmoid, $\displaystyle \frac{1} {1 + \exp(-x)}$ \\
+$\displaystyle \zeta(x)$ & Softplus, $\log(1 + \exp(x))$ \\
+$\displaystyle || \vx ||_p $ & $\normlp$ norm of $\vx$ \\
+$\displaystyle || \vx || $ & $\normltwo$ norm of $\vx$ \\
+$\displaystyle x^+$ & Positive part of $x$, i.e., $\max(0,x)$\\
+$\displaystyle \1_\mathrm{condition}$ & is 1 if the condition is true, 0 otherwise\\
+\end{tabular}
+\egroup
+\vspace{0.25cm}
+
+
